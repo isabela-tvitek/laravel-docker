@@ -1,0 +1,48 @@
+services:
+  laravel:
+    build:
+      context: ./example-app
+    ports:
+      - "8081:80"
+    networks:
+      - example-network
+    depends_on:
+      - db
+    volumes:
+      - ./example-app:/var/www/html
+      - ./example-app/vendor:/var/www/html/vendor:delegated
+      # Adicionar comando para corrigir permissões após o volume ser montado
+    command: |
+      sh -c "chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && apache2-foreground"
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root  
+      MYSQL_DATABASE: laravel    
+      MYSQL_USER: user             
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3307:3306"
+    networks:
+      - example-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8082:80"
+    networks:
+      - example-network
+
+
+networks:
+  example-network:
+    driver: bridge
