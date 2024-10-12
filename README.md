@@ -188,7 +188,7 @@ networks:
 Agora você está pronto para rodar o Docker Compose e iniciar os contêineres:
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 ### 6. Acessar os Serviços
